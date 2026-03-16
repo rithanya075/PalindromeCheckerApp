@@ -1,9 +1,57 @@
 import java.util.Scanner;
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.Stack;
+
+class Node {
+    char data;
+    Node next;
+
+    Node(char data) {
+        this.data = data;
+        this.next = null;
+    }
+}
 
 public class PalindromeCheckerApp {
+
+    public static boolean isPalindrome(Node head) {
+
+        if (head == null || head.next == null) {
+            return true;
+        }
+
+        Node slow = head;
+        Node fast = head;
+
+        // Find middle using fast & slow pointer
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Reverse second half
+        Node prev = null;
+        Node curr = slow;
+
+        while (curr != null) {
+            Node nextTemp = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextTemp;
+        }
+
+        // Compare first half and reversed second half
+        Node first = head;
+        Node second = prev;
+
+        while (second != null) {
+            if (first.data != second.data) {
+                return false;
+            }
+            first = first.next;
+            second = second.next;
+        }
+
+        return true;
+    }
 
     public static void main(String[] args) {
 
@@ -12,32 +60,23 @@ public class PalindromeCheckerApp {
         System.out.println("Enter a string:");
         String input = sc.nextLine();
 
-        Queue<Character> queue = new LinkedList<>();
-        Stack<Character> stack = new Stack<>();
+        // Convert string to linked list
+        Node head = null;
+        Node tail = null;
 
-        // Enqueue and Push characters
-        for(int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
-            queue.add(ch);     // FIFO
-            stack.push(ch);    // LIFO
-        }
+        for (char ch : input.toCharArray()) {
+            Node newNode = new Node(ch);
 
-        boolean isPalindrome = true;
-
-        // Compare dequeue and pop
-        for(int i = 0; i < input.length(); i++) {
-
-            char fromQueue = queue.remove(); // dequeue
-            char fromStack = stack.pop();    // pop
-
-            if(fromQueue != fromStack) {
-                isPalindrome = false;
-                break;
+            if (head == null) {
+                head = newNode;
+                tail = newNode;
+            } else {
+                tail.next = newNode;
+                tail = newNode;
             }
         }
 
-        // Print result
-        if(isPalindrome) {
+        if (isPalindrome(head)) {
             System.out.println("The string is a Palindrome.");
         } else {
             System.out.println("The string is NOT a Palindrome.");
